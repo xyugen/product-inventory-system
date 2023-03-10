@@ -37,7 +37,7 @@ FILE* openFile(const char* fileName, const char* mode)
     return fp;
 }
 
-// find if id exists
+// TOOLS
 bool checkProductID(int id)
 {
     FILE* fp = openFile(PFNAME, "r");
@@ -104,6 +104,28 @@ bool checkUsername(char* username)
     return false;
 }
 
+bool checkProductName(char* productName)
+{
+    FILE* fp = openFile(PFNAME, "r");
+    if (fp == NULL)
+    {
+        return false;
+    }
+
+    Product product;
+    while (fread(&product, sizeof(product), 1, fp))
+    {
+        if (!strcmp(productName, product.name))
+        {
+            fclose(fp);
+            return true;
+        }
+    }
+
+    fclose(fp);
+    return false;
+}
+
 int latestUserID()
 {
     FILE* fp = openFile(UFNAME, "r");
@@ -122,6 +144,24 @@ int latestUserID()
     return lastID;
 }
 
+int latestProductID()
+{
+    FILE* fp = openFile(PFNAME, "r");
+
+    Product product;
+    int lastID;
+    while (fread(&product, sizeof(product), 1, fp))
+    {
+        if (product.id > lastID)
+        {
+            lastID = product.id;
+        }
+    }
+
+    fclose(fp);
+    return lastID;
+}
+
 // Removes any new line
 void rmNewline(char* input)
 {
@@ -132,6 +172,8 @@ void rmNewline(char* input)
     }
 }
 
+
+// USER MANAGEMENT
 void signup()
 {
     FILE* fp = openFile(UFNAME, "a");
@@ -188,10 +230,7 @@ void login()
         {
             is_logged = true;
             current_user.is_admin = user.is_admin;
-        }
-        else
-        {
-            is_logged = false;
+            return;
         }
     }
 
@@ -246,10 +285,45 @@ void adduser()
            "User ID: %d\n"
            "Username: %s\n"
            "Password: %s\n"
-           "Admin? %d", newUser.id, newUser.username, newUser.password, newUser.is_admin);
+           "Admin? %d\n", newUser.id, newUser.username, newUser.password, newUser.is_admin);
 
     fclose(fp);
 }
+
+
+// PRODUCT MANAGEMENT
+void addProduct()
+{
+    FILE* fp = openFile(PFNAME, "a");
+
+    Product newProduct;
+    printf("NEW PRODUCT\n");
+
+    printf("Enter product name: ");
+    getchar();
+    fgets(newProduct.name, MAX_LEN, stdin);
+    rmNewline(newProduct.name);
+
+    if (checkProductName(newProduct.name))
+    {
+        printf("Product already exists!\n");
+        return;
+    }
+
+    printf("Enter quantity: ");
+    scanf("%d", &newProduct.quantity);
+
+    printf("Enter price: ");
+    scanf("%f", &newProduct.price);
+
+    newProduct.id = latestProductID() + 1;
+
+    fwrite(&newProduct, sizeof(newProduct), 1, fp);
+    printf("Product successfully added!\n");
+
+    fclose(fp);
+}
+
 
 void menu ()
 {
@@ -284,6 +358,7 @@ int main() {
 
         switch (c) {
             case 1:
+                addProduct();
                 break;
             case 2:
                 break;
