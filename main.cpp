@@ -103,13 +103,13 @@ void signup()
     printf("Creating file...\n\n"
            "\t\tProduct Inventory System\n"
            "\t\t\tSign Up\n"
-           "----------------------------------------\n"
+           "----------------------------------------------\n"
            "Enter admin username: ");
-    getchar();
-    fgets(current_user.username, 1, stdin);
+    fgets(current_user.username, MAX_LEN, stdin);
     rmNewline(current_user.username);
 
     printf("Enter admin password: ");
+    fgets(current_user.password, MAX_LEN, stdin);
     rmNewline(current_user.password);
 
     current_user.id = 1;
@@ -123,14 +123,15 @@ void signup()
 void login()
 {
     FILE* fp = openFile(UFNAME, "r");
-    if (fp == NULL)
+
+    while (!checkUserID(1))
     {
         signup();
     }
 
-    printf("\t\tProduct Inventory System\n"
-           "\t\t\tLogin\n"
-           "----------------------------------------\n"
+    printf("\tProduct Inventory System\n"
+           "\t\tLogin\n"
+           "----------------------------------------------\n"
            "Enter username: ");
     fgets(current_user.username, MAX_LEN, stdin);
     rmNewline(current_user.username);
@@ -142,10 +143,14 @@ void login()
     User user;
     while (fread(&user, sizeof(user), 1, fp))
     {
-        bool is_user = strcpy(current_user.username, user.username) && strcpy(current_user.password, user.password);
+        bool is_user = !strcmp(current_user.username, user.username) && !strcmp(current_user.password, user.password);
         if (is_user)
         {
             is_logged = true;
+        }
+        else
+        {
+            is_logged = false;
         }
     }
 
@@ -155,19 +160,20 @@ void login()
 void menu ()
 {
     char last[MAX_LEN] = "\n";
+    printf("%d", current_user.is_admin);
     if (current_user.is_admin) {
         strcpy(last, "[9] Add a user\n\n");
     }
-    printf("\t\t\tProduct Inventory System\n"
-           "\t\t\t\tMenu\n"
-           "----------------------------------------\n"
+    printf("\tProduct Inventory System\n"
+           "\t\tMenu\n"
+           "----------------------------------------------\n"
            "[1] Add a product\n"
            "[2] See product list\n"
            "[3] Update a product\n"
            "[4] Remove a product\n"
            "%s"
            "[0] Exit\n"
-           "----------------------------------------\n", last);
+           "----------------------------------------------\n", last);
 }
 
 int main() {
