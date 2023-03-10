@@ -49,6 +49,31 @@ int main() {
 
     do {
         menu();
+
+        printf("Choice: ");
+        scanf("%d", &c);
+
+        switch (c) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 9:
+                if (current_user.is_admin) {
+
+                } else printf("Invalid input...\n");
+                break;
+            case 0:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid input...");
+                break;
+        }
     } while (c != 0);
 
     return 0;
