@@ -32,7 +32,7 @@ bool is_logged = false;
 FILE* openFile(const char* fileName, const char* mode)
 {
     FILE *fp = fopen(fileName, mode);
-    if (fp == nullptr) printf("Cannot find file %s!", fileName);
+    if (fp == nullptr) printf("Cannot find file %s!\n", fileName);
 
     return fp;
 }
@@ -47,15 +47,44 @@ void rmNewline(char* input)
     }
 }
 
+void signup()
+{
+    FILE* fp = openFile(UFNAME, "a");
+    if (fp == NULL)
+    {
+        return;
+    }
+
+    printf("Creating file...\n\n"
+           "\t\tProduct Inventory System\n"
+           "\t\t\tSign Up\n"
+           "----------------------------------------\n"
+           "Enter admin username: ");
+    getchar();
+    fgets(current_user.username, 1, stdin);
+    rmNewline(current_user.username);
+
+    printf("Enter admin password: ");
+    rmNewline(current_user.password);
+
+    current_user.id = 1;
+    current_user.is_admin = true;
+
+    fwrite(&current_user, sizeof(current_user), 1, fp);
+
+    fclose(fp);
+}
+
 void login()
 {
     FILE* fp = openFile(UFNAME, "r");
     if (fp == NULL)
     {
-
+        signup();
     }
 
-    printf("\t\t\tProduct Inventory System\n"
+    printf("\t\tProduct Inventory System\n"
+           "\t\t\tLogin\n"
            "----------------------------------------\n"
            "Enter username: ");
     fgets(current_user.username, MAX_LEN, stdin);
@@ -85,6 +114,7 @@ void menu ()
         strcpy(last, "[9] Add a user\n\n");
     }
     printf("\t\t\tProduct Inventory System\n"
+           "\t\t\t\tMenu\n"
            "----------------------------------------\n"
            "[1] Add a product\n"
            "[2] See product list\n"
