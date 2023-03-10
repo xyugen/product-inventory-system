@@ -37,6 +37,51 @@ FILE* openFile(const char* fileName, const char* mode)
     return fp;
 }
 
+// find if id exists
+bool checkProductID(int id)
+{
+    FILE* fp = openFile(PFNAME, "r");
+    if (fp == NULL)
+    {
+        return false;
+    }
+
+    Product product;
+    while (fread(&product, sizeof(product), 1, fp))
+    {
+        if (id == product.id)
+        {
+            fclose(fp);
+            return true;
+        }
+    }
+
+    fclose(fp);
+    return false;
+}
+
+bool checkUserID(int id)
+{
+    FILE* fp = openFile(UFNAME, "r");
+    if (fp == NULL)
+    {
+        return false;
+    }
+
+    User user;
+    while (fread(&user, sizeof(user), 1, fp))
+    {
+        if (id == user.id)
+        {
+            fclose(fp);
+            return true;
+        }
+    }
+
+    fclose(fp);
+    return false;
+}
+
 // Removes any new line
 void rmNewline(char* input)
 {
