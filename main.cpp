@@ -324,6 +324,24 @@ void addProduct()
     fclose(fp);
 }
 
+void readProduct()
+{
+    FILE* fp = openFile(PFNAME, "r");
+    if (fp == nullptr)
+    {
+        return;
+    }
+
+    Product product;
+    printf("\t\tPRODUCT LIST\n"
+           "ID\t\tName\t\t\tQuantity\t\tPrice\n");
+    while (fread(&product, sizeof(product), 1, fp))
+    {
+        printf("%d\t\t%s\t\t\t%4d\t\t$%.2f\n", product.id, product.name, product.quantity, product.price);
+    }
+
+    fclose(fp);
+}
 
 void menu ()
 {
@@ -361,6 +379,7 @@ int main() {
                 addProduct();
                 break;
             case 2:
+                readProduct();
                 break;
             case 3:
                 break;
