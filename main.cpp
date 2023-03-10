@@ -295,6 +295,7 @@ void adduser()
 void addProduct()
 {
     FILE* fp = openFile(PFNAME, "a");
+    if (fp == nullptr) return;
 
     Product newProduct;
     printf("NEW PRODUCT\n");
@@ -327,10 +328,7 @@ void addProduct()
 void readProduct()
 {
     FILE* fp = openFile(PFNAME, "r");
-    if (fp == nullptr)
-    {
-        return;
-    }
+    if (fp == nullptr) return;
 
     Product product;
     printf("\t\tPRODUCT LIST\n"
@@ -341,6 +339,51 @@ void readProduct()
     }
 
     fclose(fp);
+}
+
+void updateProduct()
+{
+    FILE* fp = openFile(PFNAME, "r");
+    FILE* temp = openFile(PTFNAME, "w");
+    if ((fp == nullptr) || (temp == nullptr)) return;
+
+    Product newProduct;
+    printf("Enter product ID: ");
+    scanf("%d", &newProduct.id);
+
+    if (!checkProductID(newProduct.id))
+    {
+        printf("Product does not exist!\n");
+        return;
+    }
+
+    printf("Enter new product name: ");
+    getchar();
+    fgets(newProduct.name, MAX_LEN, stdin);
+    rmNewline(newProduct.name);
+
+    printf("Enter product quantity: ");
+    scanf("%d", &newProduct.quantity);
+
+    printf("Enter product price: ");
+    scanf("%f", &newProduct.price);
+
+
+    Product product;
+    while (fread(&product, sizeof(product), 1, fp))
+    {
+        if (product.id == newProduct.id)
+            fwrite(&newProduct, sizeof(newProduct), 1, temp);
+        else fwrite(&product, sizeof(product), 1, temp);
+    }
+
+    fclose(fp);
+    fclose(temp);
+
+    remove(PFNAME);
+    rename(PTFNAME, PFNAME);
+
+    printf("Product successfully updated!\n");
 }
 
 void menu ()
@@ -382,6 +425,7 @@ int main() {
                 readProduct();
                 break;
             case 3:
+                updateProduct();
                 break;
             case 4:
                 break;
