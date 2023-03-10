@@ -27,6 +27,19 @@ typedef struct {
 
 User current_user;
 
+FILE* openFile(const char* fileName, const char* mode)
+{
+    FILE *fp = fopen(fileName, mode);
+    if (fp == nullptr) printf("Cannot find file %s!", fileName);
+
+    return fp;
+}
+
+void login()
+{
+
+}
+
 void menu ()
 {
     char last[MAX_LEN] = "\n";
