@@ -25,7 +25,9 @@ typedef struct {
     bool is_admin;
 } User;
 
+// GLOBALS
 User current_user;
+bool is_logged = false;
 
 FILE* openFile(const char* fileName, const char* mode)
 {
@@ -35,9 +37,45 @@ FILE* openFile(const char* fileName, const char* mode)
     return fp;
 }
 
+// Removes any new line
+void rmNewline(char* input)
+{
+    int l = strlen(input);
+    if (input[l - 1] == '\n')
+    {
+        input[l - 1] = '\0';
+    }
+}
+
 void login()
 {
+    FILE* fp = openFile(UFNAME, "r");
+    if (fp == NULL)
+    {
 
+    }
+
+    printf("\t\t\tProduct Inventory System\n"
+           "----------------------------------------\n"
+           "Enter username: ");
+    fgets(current_user.username, MAX_LEN, stdin);
+    rmNewline(current_user.username);
+
+    printf("Enter password: ");
+    fgets(current_user.password, MAX_LEN, stdin);
+    rmNewline(current_user.password);
+
+    User user;
+    while (fread(&user, sizeof(user), 1, fp))
+    {
+        bool is_user = strcpy(current_user.username, user.username) && strcpy(current_user.password, user.password);
+        if (is_user)
+        {
+            is_logged = true;
+        }
+    }
+
+    fclose(fp);
 }
 
 void menu ()
@@ -59,6 +97,10 @@ void menu ()
 
 int main() {
     int c;
+
+    do {
+        login();
+    } while (!is_logged);
 
     do {
         menu();
