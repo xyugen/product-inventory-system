@@ -335,7 +335,10 @@ void readProduct()
            "ID\t\tName\t\t\tQuantity\t\tPrice\n");
     while (fread(&product, sizeof(product), 1, fp))
     {
-        printf("%d\t\t%s\t\t\t%4d\t\t$%.2f\n", product.id, product.name, product.quantity, product.price);
+        if (strcmp(product.name, "deleted"))
+        {
+            printf("%d\t\t%s\t\t\t%4d\t\t$%.2f\n", product.id, product.name, product.quantity, product.price);
+        }
     }
 
     fclose(fp);
@@ -386,6 +389,43 @@ void updateProduct()
     printf("Product successfully updated!\n");
 }
 
+void deleteProduct()
+{
+    FILE* fp = openFile(PFNAME, "r");
+    FILE* temp = openFile(PTFNAME, "w");
+    if ((fp == nullptr) || (temp == nullptr)) return;
+
+    Product newProduct;
+    printf("Enter product ID: ");
+    scanf("%d", &newProduct.id);
+
+    if (!checkProductID(newProduct.id))
+    {
+        printf("Product does not exist!\n");
+        return;
+    }
+
+    strcpy(newProduct.name, "deleted");
+    newProduct.quantity = NULL;
+    newProduct.price = NULL;
+
+    Product product;
+    while (fread(&product, sizeof(product), 1, fp))
+    {
+        if (product.id == newProduct.id)
+            fwrite(&newProduct, sizeof(newProduct), 1, temp);
+        else fwrite(&product, sizeof(product), 1, temp);
+    }
+
+    fclose(fp);
+    fclose(temp);
+
+    remove(PFNAME);
+    rename(PTFNAME, PFNAME);
+
+    printf("Product successfully removed!\n");
+}
+
 void menu ()
 {
     char last[MAX_LEN] = "\n";
@@ -428,6 +468,7 @@ int main() {
                 updateProduct();
                 break;
             case 4:
+                deleteProduct();
                 break;
             case 9:
                 if (current_user.is_admin) {
